@@ -172,17 +172,32 @@ Need more help? Contact support!
             job_desc = self.user_jobs[user_id]
             file_data = self.user_files[user_id]
 
-            # Extract text from file
+            # Extract text from file - handle both PDF and text
             try:
-                if file_data['mime_type'] == 'application/pdf':
-                    resume_text = pdf_handler.extract_text_from_pdf(
-                        io.BytesIO(file_data['content'])
-                    )
+                if 'pdf' in file_data['mime_type'].lower():
+                    # For PDF files
+                    pdf_bytes = io.BytesIO(file_data['content'])
+                    resume_text = pdf_handler.extract_text_from_pdf(pdf_bytes)
                 else:
-                    resume_text = file_data['content'].decode('utf-8')
+                    # For text files
+                    resume_text = file_data['content'].decode('utf-8', errors='ignore')
+                
+                # Check if text was extracted
+                if not resume_text or len(resume_text.strip()) < 10:
+                    await update.message.reply_text(
+                        "❌ Could not extract text from resume. Please try a TXT file instead."
+                    )
+                    return
+                    
             except Exception as e:
                 logger.error(f"Error extracting text: {e}")
-                await update.message.reply_text("❌ Error reading resume. Please try a different format.")
+                await update.message.reply_text(
+                    "❌ Error reading resume file. Try uploading as TXT format:\n"
+                    "1. Open your resume PDF\n"
+                    "2. Copy all text\n"
+                    "3. Save as .txt file\n"
+                    "4. Upload the .txt file"
+                )
                 return
 
             # Analyze resume
@@ -191,7 +206,10 @@ Need more help? Contact support!
             except Exception as e:
                 logger.error(f"Error in analysis: {e}")
                 await update.message.reply_text(
-                    "❌ Error analyzing resume. Please check your API key and try again."
+                    "❌ Error analyzing resume. Check:\n"
+                    "• Gemini API key is correct\n"
+                    "• Internet connection is stable\n"
+                    "• Resume content is valid"
                 )
                 return
 
