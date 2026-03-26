@@ -3,11 +3,28 @@ import { Alert, Loader } from './UI';
 
 export default function ResumeForm({ onAnalyze }) {
   const [jobDescription, setJobDescription] = useState('');
+  const [jobFile, setJobFile] = useState(null);
+  const [jobFileName, setJobFileName] = useState('');
   const [resumeFile, setResumeFile] = useState(null);
   const [fileName, setFileName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [dragActive, setDragActive] = useState(false);
+
+  const handleJobFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.type === 'application/pdf' || file.type === 'text/plain') {
+        setJobFile(file);
+        setJobFileName(file.name);
+        setJobDescription('');
+        setError('');
+      } else {
+        setError('Please upload a PDF or text file for Job Description');
+        setJobFile(null);
+      }
+    }
+  };
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -53,8 +70,8 @@ export default function ResumeForm({ onAnalyze }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!jobDescription.trim()) {
-      setError('Please enter a job description');
+    if (!jobDescription.trim() && !jobFile) {
+      setError('Please provide a job description (text or file)');
       return;
     }
     
@@ -68,7 +85,12 @@ export default function ResumeForm({ onAnalyze }) {
     
     try {
       const formData = new FormData();
-      formData.append('job_description', jobDescription);
+      if (jobDescription.trim()) {
+        formData.append('job_description', jobDescription);
+      }
+      if (jobFile) {
+        formData.append('job_file', jobFile);
+      }
       formData.append('resume_file', resumeFile);
       
       await onAnalyze(formData);
@@ -84,14 +106,45 @@ export default function ResumeForm({ onAnalyze }) {
       {error && <Alert message={error} type="error" />}
       
       <div className="form-group">
-        <label htmlFor="job-desc">Job Description *</label>
+        <label htmlFor="job-desc">Job Description * (Paste text OR Upload file)</label>
         <textarea
           id="job-desc"
           value={jobDescription}
-          onChange={(e) => setJobDescription(e.target.value)}
+          onChange={(e) => {
+            setJobDescription(e.target.value);
+            if (e.target.value) {
+                setJobFile(null);
+                setJobFileName('');
+            }
+          }}
           placeholder="Paste the complete job description here..."
-          disabled={loading}
+          disabled={loading || jobFile !== null}
+          style={jobFile ? { opacity: 0.5 } : {}}
         />
+        <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <label className="btn btn-secondary" style={{ padding: '8px 15px', cursor: 'pointer', margin: 0 }}>
+            📁 Upload JD File
+            <input 
+              type="file" 
+              accept=".pdf,.txt" 
+              onChange={handleJobFileChange} 
+              style={{ display: 'none' }}
+              disabled={loading}
+            />
+          </label>
+          <span style={{ fontSize: '14px', color: '#666' }}>
+            {jobFileName ? `Selected: ${jobFileName}` : 'Or upload PDF/TXT'}
+          </span>
+          {jobFileName && (
+            <button 
+              type="button" 
+              onClick={() => { setJobFile(null); setJobFileName(''); }}
+              style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', padding: '0 5px' }}
+            >
+              ✖ Remove
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="form-group">
@@ -130,7 +183,7 @@ export default function ResumeForm({ onAnalyze }) {
       <button
         type="submit"
         className="btn btn-primary btn-lg btn-full"
-        disabled={loading || !jobDescription.trim() || !resumeFile}
+        disabled={loading || (!jobDescription.trim() && !jobFile) || !resumeFile}
       >
         {loading ? <><Loader /> Analyzing...</> : '🚀 Analyze Resume'}
       </button>

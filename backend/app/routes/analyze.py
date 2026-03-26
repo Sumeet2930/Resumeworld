@@ -22,8 +22,9 @@ last_generated_resume = None
 
 @router.post("/analyze")
 async def analyze_resume(
-    job_description: str = Form(...),
-    resume_file: UploadFile = File(...)
+    resume_file: UploadFile = File(...),
+    job_description: Optional[str] = Form(None),
+    job_file: Optional[UploadFile] = File(None)
 ):
     """
     Analyze resume against job description
@@ -41,15 +42,26 @@ async def analyze_resume(
         else:
             # Assume it's plain text
             resume_text = file_content.decode('utf-8')
+            
+        # Process job description
+        job_text = ""
+        if job_file:
+            job_content = await job_file.read()
+            if job_file.filename.lower().endswith('.pdf'):
+                job_text = pdf_handler.extract_text_from_pdf(job_content)
+            else:
+                job_text = job_content.decode('utf-8')
+        elif job_description:
+            job_text = job_description
         
         if not resume_text.strip():
             raise HTTPException(status_code=400, detail="Could not extract text from resume")
         
-        if not job_description.strip():
-            raise HTTPException(status_code=400, detail="Job description cannot be empty")
+        if not job_text.strip():
+            raise HTTPException(status_code=400, detail="Job description cannot be empty. Please provide text or upload a file.")
         
         # Analyze and optimize
-        analysis = analyzer.analyze_and_optimize(job_description, resume_text)
+        analysis = analyzer.analyze_and_optimize(job_text, resume_text)
         
         # Store optimized resume for download
         global last_generated_resume
