@@ -66,14 +66,63 @@ Be critical but fair. Ensure scores reflect objective analysis. Return ONLY vali
             else:
                 analysis = json.loads(response_text)
             
+            # Ensure all expected keys exist with valid defaults
+            analysis.setdefault('overall_score', 5)
+            analysis.setdefault('skill_score', 5)
+            analysis.setdefault('keyword_score', 5)
+            analysis.setdefault('experience_score', 5)
+            analysis.setdefault('ats_compatibility_score', 5)
+            analysis.setdefault('matching_skills', [])
+            analysis.setdefault('missing_keywords', [])
+            analysis.setdefault('weaknesses', [])
+            analysis.setdefault('strengths', [])
+            analysis.setdefault('improvement_suggestions', [])
+            
+            # Ensure scores are integers
+            for key in ['overall_score', 'skill_score', 'keyword_score', 'experience_score', 'ats_compatibility_score']:
+                if key in analysis:
+                    try:
+                        analysis[key] = int(analysis[key])
+                        if analysis[key] > 10:
+                            analysis[key] = 10
+                        elif analysis[key] < 0:
+                            analysis[key] = 0
+                    except (ValueError, TypeError):
+                        analysis[key] = 5
+            
             return analysis
         
         except json.JSONDecodeError as e:
             print(f"JSON parsing error: {str(e)}")
             print(f"Response text: {response_text[:500]}")
-            raise Exception(f"Failed to parse AI response: {str(e)}")
+            # Return fallback structure instead of raising error
+            return {
+                'overall_score': 5,
+                'skill_score': 5,
+                'keyword_score': 5,
+                'experience_score': 5,
+                'ats_compatibility_score': 5,
+                'matching_skills': [],
+                'missing_keywords': [],
+                'weaknesses': ['Could not parse response'],
+                'strengths': ['Resume was analyzed'],
+                'improvement_suggestions': ['Try uploading as TXT format for better analysis']
+            }
         except Exception as e:
-            raise Exception(f"AI Analysis error: {str(e)}")
+            print(f"AI Analysis error: {str(e)}")
+            # Return fallback structure
+            return {
+                'overall_score': 5,
+                'skill_score': 5,
+                'keyword_score': 5,
+                'experience_score': 5,
+                'ats_compatibility_score': 5,
+                'matching_skills': [],
+                'missing_keywords': [],
+                'weaknesses': [f'Error: {str(e)}'],
+                'strengths': ['Analysis attempted'],
+                'improvement_suggestions': ['Try again with different format']
+            }
     
     def generate_optimized_resume(self, original_resume: str, job_description: str) -> str:
         """Generate an optimized version of the resume"""

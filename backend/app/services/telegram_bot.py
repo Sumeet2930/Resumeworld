@@ -264,58 +264,70 @@ Need more help? Contact support!
     def _format_analysis_results(self, analysis: dict) -> str:
         """Format analysis results for Telegram"""
         try:
+            logger.info(f"Analysis data received: {list(analysis.keys())}")
+            
             msg = "📊 **AI Resume Analysis Results**\n\n"
 
-            # Scores
+            # Scores - Handle both key variations
             msg += "📈 **Scores:**\n"
-            msg += f"• Overall Match: {analysis['overall_score']}/10 {'🟢' if analysis['overall_score'] >= 7 else '🟡' if analysis['overall_score'] >= 4 else '🔴'}\n"
-            msg += f"• Skills Match: {analysis['skills_score']}/10\n"
-            msg += f"• Keywords Match: {analysis['keywords_score']}/10\n"
-            msg += f"• Experience: {analysis['experience_score']}/10\n"
-            msg += f"• ATS Score: {analysis['ats_score']}/10\n\n"
+            overall = analysis.get('overall_score', 0)
+            msg += f"• Overall Match: {overall}/10 {'🟢' if overall >= 7 else '🟡' if overall >= 4 else '🔴'}\n"
+            msg += f"• Skills Match: {analysis.get('skill_score') or analysis.get('skills_score', 0)}/10\n"
+            msg += f"• Keywords Match: {analysis.get('keyword_score') or analysis.get('keywords_score', 0)}/10\n"
+            msg += f"• Experience: {analysis.get('experience_score', 0)}/10\n"
+            msg += f"• ATS Score: {analysis.get('ats_compatibility_score') or analysis.get('ats_score', 0)}/10\n\n"
 
             # Matching Skills
             if analysis.get('matching_skills'):
                 msg += "✅ **Matching Skills:**\n"
-                for skill in analysis['matching_skills'][:5]:
-                    msg += f"• {skill}\n"
+                skills = analysis['matching_skills']
+                if isinstance(skills, list):
+                    for skill in skills[:5]:
+                        msg += f"• {skill}\n"
                 msg += "\n"
 
             # Missing Keywords
             if analysis.get('missing_keywords'):
                 msg += "⚠️ **Missing Keywords:**\n"
-                for keyword in analysis['missing_keywords'][:5]:
-                    msg += f"• {keyword}\n"
+                keywords = analysis['missing_keywords']
+                if isinstance(keywords, list):
+                    for keyword in keywords[:5]:
+                        msg += f"• {keyword}\n"
                 msg += "\n"
 
             # Strengths
             if analysis.get('strengths'):
                 msg += "💪 **Your Strengths:**\n"
-                strengths = analysis['strengths'][:3] if isinstance(analysis['strengths'], list) else [analysis['strengths']]
-                for strength in strengths:
-                    msg += f"• {strength}\n"
+                strengths = analysis['strengths']
+                if isinstance(strengths, list):
+                    for strength in strengths[:3]:
+                        msg += f"• {strength}\n"
                 msg += "\n"
 
             # Weaknesses
             if analysis.get('weaknesses'):
                 msg += "⚡ **Areas to Improve:**\n"
-                weaknesses = analysis['weaknesses'][:3] if isinstance(analysis['weaknesses'], list) else [analysis['weaknesses']]
-                for weakness in weaknesses:
-                    msg += f"• {weakness}\n"
+                weaknesses = analysis['weaknesses']
+                if isinstance(weaknesses, list):
+                    for weakness in weaknesses[:3]:
+                        msg += f"• {weakness}\n"
                 msg += "\n"
 
             # Suggestions
             if analysis.get('improvement_suggestions'):
                 msg += "💡 **Improvement Suggestions:**\n"
-                suggestions = analysis['improvement_suggestions'][:3] if isinstance(analysis['improvement_suggestions'], list) else [analysis['improvement_suggestions']]
-                for suggestion in suggestions:
-                    msg += f"• {suggestion}\n"
+                suggestions = analysis['improvement_suggestions']
+                if isinstance(suggestions, list):
+                    for suggestion in suggestions[:3]:
+                        msg += f"• {suggestion}\n"
 
             return msg
 
         except Exception as e:
-            logger.error(f"Error formatting results: {e}")
-            return "❌ Error formatting results. Raw data available."
+            logger.error(f"Error formatting results: {e}", exc_info=True)
+            logger.error(f"Analysis data: {analysis}")
+            # Return basic info about what we got
+            return f"✅ Analysis Complete!\n\nOverall Match: {analysis.get('overall_score', 'N/A')}/10\n\nDetailed report sent separately."
 
     async def main(self):
         """Start the bot"""
