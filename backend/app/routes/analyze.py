@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional
 from app.services.ai_service import AIResumeAnalyzer
@@ -77,8 +77,8 @@ async def download_optimized_resume(request: ResumeDownloadRequest):
         # Generate PDF
         pdf_content = pdf_handler.generate_resume_pdf(resume_text)
         
-        # Return PDF as bytes
-        return FileResponse(
+        # Return PDF using StreamingResponse
+        return StreamingResponse(
             io.BytesIO(pdf_content),
             media_type="application/pdf",
             headers={"Content-Disposition": "attachment; filename=optimized_resume.pdf"}
@@ -99,7 +99,7 @@ async def download_optimized_resume_get():
         # Generate PDF
         pdf_content = pdf_handler.generate_resume_pdf(last_generated_resume)
         
-        return FileResponse(
+        return StreamingResponse(
             io.BytesIO(pdf_content),
             media_type="application/pdf",
             headers={"Content-Disposition": "attachment; filename=optimized_resume.pdf"}
