@@ -392,6 +392,8 @@ Need more help? Contact support!
                     for suggestion in suggestions[:3]:
                         msg += f"• {suggestion}\n"
 
+            msg += "\n\n📥 **Download Optimized Resume:**\nSend /download to download your optimized resume as PDF!"
+
             return msg
 
         except Exception as e:
