@@ -1,7 +1,7 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from pydantic import BaseModel
 from app.services.ai_service import AIResumeAnalyzer
-from app.utils.pdf_handler import extract_text_from_pdf
+from app.utils.pdf_handler import PDFHandler
 import logging
 
 logger = logging.getLogger(__name__)
@@ -108,7 +108,7 @@ async def upload_and_ask(
         # Extract text based on file type
         if resume_file.content_type == 'application/pdf':
             try:
-                resume_text = extract_text_from_pdf(file_content)
+                resume_text = PDFHandler.extract_text_from_pdf(file_content)
             except Exception as pdf_e:
                 logger.warning(f"PDF extraction failed: {pdf_e}")
                 raise HTTPException(
