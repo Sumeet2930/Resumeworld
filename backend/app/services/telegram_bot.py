@@ -598,7 +598,7 @@ Need help? Contact support!
         logger.error(f"Update {update} caused error {context.error}")
 
 
-async def start_telegram_bot():
+def start_telegram_bot():
     """Start the Telegram bot - Simple version"""
     token = settings.TELEGRAM_BOT_TOKEN
     
@@ -629,4 +629,4 @@ async def start_telegram_bot():
     logger.info("🔄 Bot is polling for updates...")
     
     # Run the bot
-    await app.run_polling(allowed_updates=Update.ALL_TYPES)
+    app.run_polling(allowed_updates=Update.ALL_TYPES)
