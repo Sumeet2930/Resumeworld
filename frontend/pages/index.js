@@ -41,21 +41,23 @@ export default function Home() {
           {error && <Alert message={error} type="error" />}
           
           <div style={{ maxWidth: '700px', margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-              <h2 style={{ fontSize: '32px', color: 'var(--primary-color)', marginBottom: '12px' }}>
+            <div className="animate-in delay-1" style={{ textAlign: 'center', marginBottom: '48px', paddingTop: '20px' }}>
+              <h2 style={{ fontSize: '42px', fontWeight: '800', marginBottom: '16px', background: 'var(--gradient-main)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.03em' }}>
                 AI Resume Analyzer
               </h2>
-              <p style={{ fontSize: '16px', color: '#7f8c8d', marginBottom: '8px' }}>
+              <p style={{ fontSize: '16px', color: 'var(--text-muted)', marginBottom: '8px' }}>
                 Get your resume analyzed and optimized for the perfect job match
               </p>
-              <p style={{ fontSize: '14px', color: '#95a5a6' }}>
+              <p style={{ fontSize: '14px', color: 'var(--text-dark)' }}>
                 Our AI will compare your resume with the job description and provide actionable insights
               </p>
             </div>
 
-            <ResumeForm onAnalyze={handleAnalyze} />
+            <div className="animate-in delay-2">
+              <ResumeForm onAnalyze={handleAnalyze} />
+            </div>
 
-            <div className="grid grid-3" style={{ marginTop: '40px' }}>
+            <div className="grid grid-3 animate-in delay-3" style={{ marginTop: '40px' }}>
               <div className="card" style={{ textAlign: 'center', padding: '20px' }}>
                 <div style={{ fontSize: '28px', marginBottom: '12px' }}>🎯</div>
                 <h4 style={{ marginBottom: '8px' }}>Precise Matching</h4>

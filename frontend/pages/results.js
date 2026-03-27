@@ -110,9 +110,9 @@ export default function Results() {
           />
 
           {downloading && (
-            <div className="card" style={{ textAlign: 'center', padding: '20px', marginTop: '20px', backgroundColor: 'var(--light-bg)' }}>
+            <div className="card" style={{ textAlign: 'center', padding: '20px', marginTop: '20px' }}>
               <Loader />
-              <p>Generating PDF...</p>
+              <p style={{ marginTop: '12px', fontSize: '15px' }}>Generating PDF...</p>
             </div>
           )}
         </div>

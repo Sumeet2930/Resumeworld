@@ -121,9 +121,9 @@ export default function ResumeForm({ onAnalyze }) {
           disabled={loading || jobFile !== null}
           style={jobFile ? { opacity: 0.5 } : {}}
         />
-        <div style={{ marginTop: '10px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <label className="btn btn-secondary" style={{ padding: '8px 15px', cursor: 'pointer', margin: 0 }}>
-            📁 Upload JD File
+        <div style={{ marginTop: '12px', display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+          <label className="btn btn-secondary" style={{ padding: '10px 16px', cursor: 'pointer', margin: 0, display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span>📁</span> Upload JD File
             <input 
               type="file" 
               accept=".pdf,.txt" 
@@ -132,14 +132,15 @@ export default function ResumeForm({ onAnalyze }) {
               disabled={loading}
             />
           </label>
-          <span style={{ fontSize: '14px', color: '#666' }}>
+          <span style={{ fontSize: '14px', color: 'var(--text-muted)' }}>
             {jobFileName ? `Selected: ${jobFileName}` : 'Or upload PDF/TXT'}
           </span>
           {jobFileName && (
             <button 
               type="button" 
               onClick={() => { setJobFile(null); setJobFileName(''); }}
-              style={{ background: 'none', border: 'none', color: '#e74c3c', cursor: 'pointer', padding: '0 5px' }}
+              className="btn"
+              style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', color: 'var(--danger-color)', padding: '6px 12px', fontSize: '13px' }}
             >
               ✖ Remove
             </button>
@@ -165,7 +166,7 @@ export default function ResumeForm({ onAnalyze }) {
               <div style={{ marginBottom: '4px', fontWeight: '500' }}>
                 {fileName || 'Drag & drop your resume or click to browse'}
               </div>
-              <div style={{ fontSize: '12px', color: '#7f8c8d' }}>
+              <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>
                 Supported: PDF, TXT
               </div>
             </div>
