@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import styles from '@/styles/components/QuestionForm.module.css';
+import styles from '../styles/components/QuestionForm.module.css';
 
 const QuestionForm = ({ resumeText, jobDescription, isDisabled = false }) => {
   const [question, setQuestion] = useState('');
