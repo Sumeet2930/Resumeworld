@@ -550,7 +550,7 @@ Need help? Contact support!
                     for suggestion in suggestions[:3]:
                         msg += f"• {suggestion}\n"
 
-            msg += "\n\n<b>📥 Download Optimized Resume:</b>\nSend /download to download your optimized resume as PDF!"
+            msg += "\n\n<b>📥 What's Next?</b>\n• Send /download to download your optimized resume as PDF!\n• Send /ask &lt;your question&gt; to ask AI anything about your resume!"
 
             return msg
 
@@ -622,6 +622,7 @@ def start_telegram_bot():
     app.add_handler(CommandHandler("setjobfile", bot.set_job_file))
     app.add_handler(CommandHandler("analyze", bot.analyze_resume))
     app.add_handler(CommandHandler("download", bot.download_resume))
+    app.add_handler(CommandHandler("ask", bot.ask_question))
     app.add_handler(MessageHandler(filters.Document.ALL, bot.handle_document))
     app.add_error_handler(bot._error_handler)
     
